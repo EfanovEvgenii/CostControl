@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Контроль расходов</string>
+    <string name="hello_world">Сумма:</string>
+    <string name="action_settings">Настройки</string>
+    <string name="buttonSumOK">OK</string>
+
+</resources>
