@@ -1,61 +1,57 @@
 package com.jeezsoft.costcontrol;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.LoaderManager;
-import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
+
 import android.widget.Toast;
 
-import java.util.concurrent.TimeUnit;
 
 
 
-public class MainActivity extends Activity implements onSomeEventListener, CostItemListFragment.OnFragmentInteractionListener {
+public class MainActivity extends Activity implements onSomeEventListener, CostItemListFragment.OnFragmentInteractionListener, View.OnClickListener {
 
     CostItemListFragment costItemList;
     float sum = 0;
+
+    public DB getDb() {
+        return db;
+    }
+
+    DB db;
     FragmentTransaction fTrans;
 
       @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        db = new DB(this);
+        db.open();
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             fTrans = getFragmentManager().beginTransaction();
             fTrans.add(R.id.container, new PlaceholderFragment());
-            //tfTrans.addToBackStack(null);
+            fTrans.addToBackStack(null);
             fTrans.commit();
         }
 
-
-
+        Button btnList = (Button) findViewById(R.id.buttonList);
+        btnList.setOnClickListener(this);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        db.close();
     }
 
 
@@ -99,8 +95,26 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
     @Override
     public void onFragmentInteraction(Long id) {
         Toast.makeText(this, "id = "+id, Toast.LENGTH_LONG).show();
+
     }
 
+    /**
+     * Called when a view has been clicked.
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()){
+            case R.id.buttonList: fTrans = getFragmentManager().beginTransaction();
+                fTrans.replace(R.id.container, new CostListListFragment());
+                fTrans.addToBackStack(null);
+                fTrans.commit();
+                break;
+        }
+
+    }
 
 
     /**
