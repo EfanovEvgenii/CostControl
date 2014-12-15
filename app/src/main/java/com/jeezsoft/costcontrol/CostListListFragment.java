@@ -82,6 +82,7 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        db = ((MainActivity)getActivity()).getDb();
 //        if (getArguments() != null) {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
@@ -97,8 +98,8 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_list, container, false);
 
-        db = new DB(getActivity());
-        db.open();
+//        db = new DB(getActivity());
+//        db.open();
 
         //cursor = db.getAllCostList();
 //

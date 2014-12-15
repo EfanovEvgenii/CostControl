@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,19 +17,21 @@ import android.widget.EditText;
 
 import android.widget.Toast;
 
-
+import java.text.DecimalFormatSymbols;
+import java.util.regex.Pattern;
 
 
 public class MainActivity extends Activity implements onSomeEventListener, CostItemListFragment.OnFragmentInteractionListener, View.OnClickListener {
 
     CostItemListFragment costItemList;
     float sum = 0;
+    DB db;
 
     public DB getDb() {
         return db;
     }
 
-    DB db;
+
     FragmentTransaction fTrans;
 
       @Override
@@ -80,7 +84,7 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
     @Override
     public void someEvent(float sum) {
         this.sum = sum;
-        Toast.makeText(this, "summa = "+sum, Toast.LENGTH_LONG).show();
+       // Toast.makeText(this, "summa = "+sum, Toast.LENGTH_LONG).show();
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, new CostItemListFragment());
         fTrans.addToBackStack(null);
@@ -94,8 +98,12 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
 
     @Override
     public void onFragmentInteraction(Long id) {
-        Toast.makeText(this, "id = "+id, Toast.LENGTH_LONG).show();
-
+       // Toast.makeText(this, "id = "+id, Toast.LENGTH_LONG).show();
+        db.addListRec(id, sum);
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, new PlaceholderFragment());
+        fTrans.addToBackStack(null);
+        fTrans.commit();
     }
 
     /**
@@ -120,7 +128,7 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public class PlaceholderFragment extends Fragment {
 
 
 
@@ -156,12 +164,40 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
                 }
             });
 
+            etSumma.setFilters(new InputFilter[]{new PriceInputFilter()});
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
             if (imm != null) {
                 imm.showSoftInput(etSumma, 0);
             }
 
             return rootView;
+        }
+
+
+
+    }
+
+    public class PriceInputFilter implements InputFilter {
+
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end,
+                                   Spanned dest, int dstart, int dend) {
+
+            String checkedText = dest.toString() + source.toString();
+            String pattern = getPattern();
+
+            if (!Pattern.matches(pattern, checkedText)) {
+                return "";
+            }
+
+            return null;
+        }
+
+        private String getPattern() {
+            DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+            String ds = String.valueOf(dfs.getDecimalSeparator());
+            String pattern = "[0-9]+([" + ds + "]{1}||[" + ds + "]{1}[0-9]{1,2})?";
+            return pattern;
         }
     }
 }

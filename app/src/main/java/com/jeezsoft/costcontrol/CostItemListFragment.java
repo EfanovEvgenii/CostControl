@@ -50,7 +50,7 @@ public class CostItemListFragment extends Fragment implements AbsListView.OnItem
     SimpleCursorAdapter scAdapter;
     private static final int CM_DELETE_ID = 1;
     ListView lvData;
-    Cursor cursor;
+    //Cursor cursor;
 
     private OnFragmentInteractionListener mListener;
 
@@ -87,6 +87,7 @@ public class CostItemListFragment extends Fragment implements AbsListView.OnItem
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        db = ((MainActivity)getActivity()).getDb();
 //        if (getArguments() != null) {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
@@ -102,17 +103,17 @@ public class CostItemListFragment extends Fragment implements AbsListView.OnItem
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
-        db = new DB(this.getActivity());
-        db.open();
-
-        cursor = db.getAllData();
+//        db = new DB(this.getActivity());
+//        db.open();
+//
+//        cursor = db.getAllData();
 
 //        if (cursor.moveToFirst()) {
 //            do {
 //                Toast.makeText(getActivity(), cursor.getString(1), Toast.LENGTH_SHORT).show();
 //            } while (cursor.moveToNext());
 //        }
-        this.getActivity().startManagingCursor(cursor);
+//        this.getActivity().startManagingCursor(cursor);
 
         String[] from = new String[] {DB.COLUMN_IMG, DB.COLUMN_TXT};
         int[] to = new int[] {R.id.ivImg, R.id.tvText};
@@ -197,12 +198,12 @@ public class CostItemListFragment extends Fragment implements AbsListView.OnItem
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        scAdapter.swapCursor(cursor);
+        scAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        scAdapter.swapCursor(cursor);
+        //scAdapter.swapCursor(cursor);
     }
 
     static class MyCursorLoader extends CursorLoader {
@@ -217,11 +218,11 @@ public class CostItemListFragment extends Fragment implements AbsListView.OnItem
         @Override
         public Cursor loadInBackground() {
             Cursor cursor = db.getAllData();
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                TimeUnit.SECONDS.sleep(1);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             return cursor;
         }
 

@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by jeezic on 07.12.2014.
  */
 public class DB {
-    private static final String DB_NAME = "mydb16";
+    private static final String DB_NAME = "my_db";
     private static final int DB_VERSION = 1;
     private static final String DB_TABLE = "costItems";
 
@@ -138,71 +138,71 @@ public class DB {
             cv.put(COLUMN_IMG, R.drawable.ic_launcher);
             db.insert(DB_TABLE, null, cv);
 
-
-            cv.clear();
-            cv.put(LIST_COLUMN_IDCOST, 0);
-            cv.put(LIST_COLUMN_SUM, 500);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 1);
-            cv.put(LIST_COLUMN_SUM, 200);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 1);
-            cv.put(LIST_COLUMN_SUM, 1300);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 3);
-            cv.put(LIST_COLUMN_SUM, 45345.45);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 3);
-            cv.put(LIST_COLUMN_SUM, 500);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 5);
-            cv.put(LIST_COLUMN_SUM, 200);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 1);
-            cv.put(LIST_COLUMN_SUM, 1300);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 4);
-            cv.put(LIST_COLUMN_SUM, 45345.45);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 0);
-            cv.put(LIST_COLUMN_SUM, 500);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 1);
-            cv.put(LIST_COLUMN_SUM, 200);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 1);
-            cv.put(LIST_COLUMN_SUM, 1300);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 3);
-            cv.put(LIST_COLUMN_SUM, 45345.45);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 3);
-            cv.put(LIST_COLUMN_SUM, 500);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 5);
-            cv.put(LIST_COLUMN_SUM, 200);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 1);
-            cv.put(LIST_COLUMN_SUM, 1300);
-            db.insert(DB_TABLE_LIST, null, cv);
-
-            cv.put(LIST_COLUMN_IDCOST, 4);
-            cv.put(LIST_COLUMN_SUM, 45345.45);
-            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.clear();
+//            cv.put(LIST_COLUMN_IDCOST, 0);
+//            cv.put(LIST_COLUMN_SUM, 500);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 1);
+//            cv.put(LIST_COLUMN_SUM, 200);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 1);
+//            cv.put(LIST_COLUMN_SUM, 1300);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 3);
+//            cv.put(LIST_COLUMN_SUM, 45345.45);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 3);
+//            cv.put(LIST_COLUMN_SUM, 500);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 5);
+//            cv.put(LIST_COLUMN_SUM, 200);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 1);
+//            cv.put(LIST_COLUMN_SUM, 1300);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 4);
+//            cv.put(LIST_COLUMN_SUM, 45345.45);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 0);
+//            cv.put(LIST_COLUMN_SUM, 500);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 1);
+//            cv.put(LIST_COLUMN_SUM, 200);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 1);
+//            cv.put(LIST_COLUMN_SUM, 1300);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 3);
+//            cv.put(LIST_COLUMN_SUM, 45345.45);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 3);
+//            cv.put(LIST_COLUMN_SUM, 500);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 5);
+//            cv.put(LIST_COLUMN_SUM, 200);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 1);
+//            cv.put(LIST_COLUMN_SUM, 1300);
+//            db.insert(DB_TABLE_LIST, null, cv);
+//
+//            cv.put(LIST_COLUMN_IDCOST, 4);
+//            cv.put(LIST_COLUMN_SUM, 45345.45);
+//            db.insert(DB_TABLE_LIST, null, cv);
 
         }
 
