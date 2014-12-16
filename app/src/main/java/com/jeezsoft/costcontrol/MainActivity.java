@@ -164,7 +164,7 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
                 }
             });
 
-            etSumma.setFilters(new InputFilter[]{new PriceInputFilter()});
+           // etSumma.setFilters(new InputFilter[]{new PriceInputFilter()});
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
             if (imm != null) {
                 imm.showSoftInput(etSumma, 0);
