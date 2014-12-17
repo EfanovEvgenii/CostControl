@@ -66,14 +66,14 @@ public class CostItemListFragment extends Fragment implements AbsListView.OnItem
     private ListAdapter mAdapter;
 
     // TODO: Rename and change types of parameters
-//    public static CostItemListFragment newInstance(String param1, String param2) {
-//        CostItemListFragment fragment = new CostItemListFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    public static CostItemListFragment newInstance(String param1, String param2) {
+        CostItemListFragment fragment = new CostItemListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

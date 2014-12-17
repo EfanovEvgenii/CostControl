@@ -37,7 +37,7 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
       @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = new DB(this);
+        db = ((MyApp)getApplication()).getDb(this);
         db.open();
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
@@ -49,6 +49,13 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
 
         Button btnList = (Button) findViewById(R.id.buttonList);
         btnList.setOnClickListener(this);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+      //  outState.put
 
     }
 
@@ -125,79 +132,5 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
     }
 
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public class PlaceholderFragment extends Fragment {
 
-
-
-        onSomeEventListener someEventListener;
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            try {
-                someEventListener = (onSomeEventListener) activity;
-            } catch (ClassCastException e){
-                throw new ClassCastException(activity.toString()+" must implement onSomeEventListener");
-            }
-        }
-
-
-        final String LOG_TAG = "myLogs";
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            final EditText etSumma = (EditText) rootView.findViewById(R.id.etSumma);
-            Button button = (Button) rootView.findViewById(R.id.buttonSumOK);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    float sum = Float.parseFloat(etSumma.getText().toString());
-                    someEventListener.someEvent(sum);
-                }
-            });
-
-           // etSumma.setFilters(new InputFilter[]{new PriceInputFilter()});
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.showSoftInput(etSumma, 0);
-            }
-
-            return rootView;
-        }
-
-
-
-    }
-
-    public class PriceInputFilter implements InputFilter {
-
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end,
-                                   Spanned dest, int dstart, int dend) {
-
-            String checkedText = dest.toString() + source.toString();
-            String pattern = getPattern();
-
-            if (!Pattern.matches(pattern, checkedText)) {
-                return "";
-            }
-
-            return null;
-        }
-
-        private String getPattern() {
-            DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-            String ds = String.valueOf(dfs.getDecimalSeparator());
-            String pattern = "[0-9]+([" + ds + "]{1}||[" + ds + "]{1}[0-9]{1,2})?";
-            return pattern;
-        }
-    }
 }
