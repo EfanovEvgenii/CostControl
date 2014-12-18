@@ -79,6 +79,17 @@ public class DB {
         return mDB.rawQuery(sqlQuery, null);
     }
 
+    public Cursor getCostListForExport() {
+        String sqlQuery = "select " +
+                DB_TABLE_LIST+"."+LIST_COLUMN_DATE + ", " +
+                DB_TABLE + "." + COLUMN_TXT + ", " +
+                DB_TABLE_LIST+"."+LIST_COLUMN_SUM + " " +
+                "from " + DB_TABLE_LIST + " AS " + DB_TABLE_LIST + " " +
+                "inner join " + DB_TABLE + " AS "+ DB_TABLE + " ON " + DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST +" = " + DB_TABLE+"."+COLUMN_ID;
+
+        return mDB.rawQuery(sqlQuery, null);
+    }
+
     // добавить запись в DB_TABLE
     public void addRec(String txt, int img) {
         ContentValues cv = new ContentValues();

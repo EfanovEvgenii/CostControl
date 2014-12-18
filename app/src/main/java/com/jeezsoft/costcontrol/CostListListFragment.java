@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +29,8 @@ import android.widget.Toast;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -155,42 +158,67 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
             case R.id.sendmail_item:
                 Toast.makeText(getActivity(),"Отправка почты",Toast.LENGTH_SHORT).show();
                 boolean filecreated = false;
-
+                String DIR_SD = "CostControl";
+                String FILENAME_SD = "list.csv";
+                if (!Environment.getExternalStorageState().equals(
+                        Environment.MEDIA_MOUNTED)) {
+                    //Log.d(LOG_TAG, "SD-карта не доступна: " + Environment.getExternalStorageState());
+                    break;
+                }
+                // получаем путь к SD
+                File sdPath = Environment.getExternalStorageDirectory();
+                // добавляем свой каталог к пути
+                sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+                // создаем каталог
+                sdPath.mkdirs();
+                // формируем объект File, который содержит путь к файлу
+                File sdFile = new File(sdPath, FILENAME_SD);
                 try {
-                    // отрываем поток для записи
-                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                            getActivity().openFileOutput("list.csv", getActivity().MODE_WORLD_WRITEABLE)));
+                    // открываем поток для записи
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+                    Cursor cursor = db.getCostListForExport();
+
+                    if (cursor.moveToFirst()) {
+                        do {
+                            String listString = "";
+                            for (int i=0; i<cursor.getColumnCount();i++) {
+                                //Toast.makeText(getActivity(), cursor.getString(i), Toast.LENGTH_SHORT).show();
+                                listString = listString + cursor.getString(i) + ((i==cursor.getColumnCount()-1) ? "" : ";");
+                            }
+                            bw.write(listString+"\n");
+                        } while (cursor.moveToNext());
+                    }
+                        //this.getActivity().startManagingCursor(cursor);
                     // пишем данные
-                    bw.write("Содержимое файла");
+                    //bw.write("Содержимое файла на SD");
                     // закрываем поток
                     bw.close();
                     filecreated = true;
-                    //Log.d(LOG_TAG, "Файл записан");
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    //Log.d(LOG_TAG, "Файл записан на SD: " + sdFile.getAbsolutePath());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                if (filecreated) {
+                if (filecreated && sdFile != null) {
 
-                    Intent sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                     sharingIntent.setType("*/*");
-                    String[] to = new String[]{"jeezic@yandex.ru"};
+                    String[] to = new String[]{""};
                     sharingIntent.putExtra(Intent.EXTRA_EMAIL, to);
-                    sharingIntent.putExtra(Intent.EXTRA_TEXT, "I'm email body.");
-                    //sharingIntent.putExtra(Intent.EXTRA_STREAM, "list.csv");
-                    sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "subject");
+                    sharingIntent.putExtra(Intent.EXTRA_TEXT, "Отчет по расходам в формате csv");
+                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(sdFile));
 
-                    ArrayList<Uri> uris = new ArrayList<Uri>();
-                    String[] filePaths = new String[] {"list.csv"};
-                    for (String file : filePaths)
-                    {
-                        File fileIn = new File(file);
-                        Uri u = Uri.fromFile(fileIn);
-                        uris.add(u);
-                       }
-                    sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                    sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Отчет по расходам");
+
+//                    ArrayList<Uri> uris = new ArrayList<Uri>();
+//                    String[] filePaths = new String[] {"list.csv"};
+//                    for (String file : filePaths)
+//                    {
+//                        File fileIn = new File(file);
+//                        Uri u = Uri.fromFile(fileIn);
+//                        uris.add(u);
+//                       }
+//                    sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
                     startActivity(Intent.createChooser(sharingIntent, "Send email"));
                 }
