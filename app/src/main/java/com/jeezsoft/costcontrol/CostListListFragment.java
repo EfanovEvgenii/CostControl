@@ -5,10 +5,16 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -19,7 +25,12 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.concurrent.TimeUnit;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -80,6 +91,7 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 
  //   @Override
     public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
 
         db = ((MainActivity)getActivity()).getDb();
@@ -129,6 +141,63 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 ///
 
         return view;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_costlist, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.sendmail_item:
+                Toast.makeText(getActivity(),"Отправка почты",Toast.LENGTH_SHORT).show();
+                boolean filecreated = false;
+
+                try {
+                    // отрываем поток для записи
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                            getActivity().openFileOutput("list.csv", getActivity().MODE_WORLD_WRITEABLE)));
+                    // пишем данные
+                    bw.write("Содержимое файла");
+                    // закрываем поток
+                    bw.close();
+                    filecreated = true;
+                    //Log.d(LOG_TAG, "Файл записан");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (filecreated) {
+
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                    sharingIntent.setType("*/*");
+                    String[] to = new String[]{"jeezic@yandex.ru"};
+                    sharingIntent.putExtra(Intent.EXTRA_EMAIL, to);
+                    sharingIntent.putExtra(Intent.EXTRA_TEXT, "I'm email body.");
+                    //sharingIntent.putExtra(Intent.EXTRA_STREAM, "list.csv");
+                    sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "subject");
+
+                    ArrayList<Uri> uris = new ArrayList<Uri>();
+                    String[] filePaths = new String[] {"list.csv"};
+                    for (String file : filePaths)
+                    {
+                        File fileIn = new File(file);
+                        Uri u = Uri.fromFile(fileIn);
+                        uris.add(u);
+                       }
+                    sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+                    startActivity(Intent.createChooser(sharingIntent, "Send email"));
+                }
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

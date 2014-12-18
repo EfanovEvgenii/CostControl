@@ -46,6 +46,9 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
             fTrans.addToBackStack(null);
             fTrans.commit();
         }
+        else {
+            sum = savedInstanceState.getFloat("sum", 0);
+        }
 
         Button btnList = (Button) findViewById(R.id.buttonList);
         btnList.setOnClickListener(this);
@@ -55,7 +58,7 @@ public class MainActivity extends Activity implements onSomeEventListener, CostI
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-      //  outState.put
+        outState.putFloat("sum", sum);
 
     }
 

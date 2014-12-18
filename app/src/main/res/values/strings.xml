@@ -6,5 +6,7 @@
     <string name="action_settings">Настройки</string>
     <string name="buttonSumOK">OK</string>
     <string name="ListCaption">Список</string>
+    <string name="menumail_item">Отправить</string>
+
 
 </resources>
