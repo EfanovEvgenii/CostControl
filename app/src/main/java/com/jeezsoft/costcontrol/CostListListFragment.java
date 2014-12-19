@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -130,12 +132,51 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 
         scAdapter = new SimpleCursorAdapter(this.getActivity(), R.layout.listitem, null, from, to, 0);
 
-        ListView lvData = (ListView) view.findViewById(R.id.lvListData);
+        final ListView lvData = (ListView) view.findViewById(R.id.lvListData);
         lvData.setAdapter(scAdapter);
 
         lvData.setOnItemClickListener(this);
 
-        // добавляем контекстное меню к списку
+        lvData.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        lvData.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.menu_costlist_actionmode, menu);
+                return true;
+            }
+
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                SparseBooleanArray sbArray = lvData.getCheckedItemPositions();
+                for (int i = 0; i < sbArray.size(); i++) {
+                    int key = sbArray.keyAt(i);
+                    if (sbArray.get(key))
+                        Toast.makeText(getActivity(), ""+key, Toast.LENGTH_LONG).show();
+                }
+                mode.finish();
+                return false;
+            }
+
+            public void onDestroyActionMode(ActionMode mode) {
+            }
+
+            public void onItemCheckedStateChanged(ActionMode mode,
+                                                  int position, long id, boolean checked) {
+                Toast.makeText(getActivity(), "position = " + position + ", checked = ", Toast.LENGTH_LONG).show();
+//                        + checked);
+//                Log.d(LOG_TAG, "position = " + position + ", checked = "
+//                        + checked);
+            }
+        });
+
+
+
+
+
+    // добавляем контекстное меню к списку
         //registerForContextMenu(lvData);
 
         // создаем лоадер для чтения данных
@@ -145,6 +186,7 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 
         return view;
     }
+
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_costlist, menu);

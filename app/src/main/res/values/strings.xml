@@ -7,6 +7,7 @@
     <string name="buttonSumOK">OK</string>
     <string name="ListCaption">Список</string>
     <string name="menumail_item">Отправить</string>
+    <string name="listdel_item">Удалить</string>
 
 
 </resources>
