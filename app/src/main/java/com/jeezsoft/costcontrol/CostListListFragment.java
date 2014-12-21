@@ -46,7 +46,7 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class CostListListFragment extends Fragment implements AbsListView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class CostListListFragment extends Fragment implements AbsListView.OnItemClickListener, AbsListView.MultiChoiceModeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,7 +61,7 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
     DB db;
     SimpleCursorAdapter scAdapter;
     private static final int CM_DELETE_ID = 1;
-    ListView lvData;
+    AbsListView lvData;
 
     private OnFragmentInteractionListener mListener;
 
@@ -132,51 +132,19 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 
         scAdapter = new SimpleCursorAdapter(this.getActivity(), R.layout.listitem, null, from, to, 0);
 
-        final ListView lvData = (ListView) view.findViewById(R.id.lvListData);
+        //final ListView
+        lvData = (ListView) view.findViewById(R.id.lvListData);
         lvData.setAdapter(scAdapter);
+        scAdapter.notifyDataSetChanged();
 
         lvData.setOnItemClickListener(this);
 
         lvData.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        lvData.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_costlist_actionmode, menu);
-                return true;
-            }
-
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                SparseBooleanArray sbArray = lvData.getCheckedItemPositions();
-                for (int i = 0; i < sbArray.size(); i++) {
-                    int key = sbArray.keyAt(i);
-                    if (sbArray.get(key))
-                        Toast.makeText(getActivity(), ""+key, Toast.LENGTH_LONG).show();
-                }
-                mode.finish();
-                return false;
-            }
-
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-
-            public void onItemCheckedStateChanged(ActionMode mode,
-                                                  int position, long id, boolean checked) {
-                Toast.makeText(getActivity(), "position = " + position + ", checked = ", Toast.LENGTH_LONG).show();
-//                        + checked);
-//                Log.d(LOG_TAG, "position = " + position + ", checked = "
-//                        + checked);
-            }
-        });
+        lvData.setMultiChoiceModeListener(this);
 
 
 
-
-
-    // добавляем контекстное меню к списку
+        // добавляем контекстное меню к списку
         //registerForContextMenu(lvData);
 
         // создаем лоадер для чтения данных
@@ -185,6 +153,40 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 ///
 
         return view;
+    }
+
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        mode.getMenuInflater().inflate(R.menu.menu_costlist_actionmode, menu);
+        return true;
+    }
+
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        SparseBooleanArray sbArray = lvData.getCheckedItemPositions();
+        for (int i = 0; i < sbArray.size(); i++) {
+            int key = sbArray.keyAt(i);
+            if (sbArray.get(key)) {
+                db.delListRec(key);
+                getLoaderManager().getLoader(0).forceLoad();
+            }
+                //Toast.makeText(getActivity(), ""+key, Toast.LENGTH_LONG).show();
+        }
+        mode.finish();
+        return false;
+    }
+
+    public void onDestroyActionMode(ActionMode mode) {
+    }
+
+    public void onItemCheckedStateChanged(ActionMode mode,
+                                          int position, long id, boolean checked) {
+        //Toast.makeText(getActivity(), "position = " + position + ", checked = ", Toast.LENGTH_LONG).show();
+//                        + checked);
+//                Log.d(LOG_TAG, "position = " + position + ", checked = "
+//                        + checked);
     }
 
 
