@@ -127,8 +127,8 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 //        }
         //this.getActivity().startManagingCursor(cursor);
 
-        String[] from = new String[] {DB.LIST_COLUMN_DATE, DB.COLUMN_TXT, DB.LIST_COLUMN_SUM};
-        int[] to = new int[] {R.id.tvListDate, R.id.tvListText, R.id.tvListSum};
+        String[] from = new String[] {DB.LIST_COLUMN_DATE, DB.COLUMN_TXT, DB.LIST_COLUMN_SUM, DB.LIST_COLUMN_ID};
+        int[] to = new int[] {R.id.tvListDate, R.id.tvListText, R.id.tvListSum, R.id.tvListId};
 
         scAdapter = new SimpleCursorAdapter(this.getActivity(), R.layout.listitem, null, from, to, 0);
 
@@ -165,15 +165,19 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
     }
 
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        SparseBooleanArray sbArray = lvData.getCheckedItemPositions();
-        for (int i = 0; i < sbArray.size(); i++) {
-            int key = sbArray.keyAt(i);
-            if (sbArray.get(key)) {
-                db.delListRec(key);
+
+        SparseBooleanArray sparseBooleanArray = lvData.getCheckedItemPositions();
+        for (int i = 0; i < sparseBooleanArray.size(); i++) {
+            if (sparseBooleanArray.valueAt(i)) {
+                Cursor curRow = (Cursor) lvData.getItemAtPosition(sparseBooleanArray.keyAt(i));
+                int IDindex = curRow.getColumnIndex(db.LIST_COLUMN_ID);
+                int curId = curRow.getInt(IDindex);
+                db.delListRec(curId);
                 getLoaderManager().getLoader(0).forceLoad();
+
             }
-                //Toast.makeText(getActivity(), ""+key, Toast.LENGTH_LONG).show();
         }
+
         mode.finish();
         return false;
     }

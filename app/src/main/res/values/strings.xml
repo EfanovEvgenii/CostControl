@@ -9,5 +9,13 @@
     <string name="menumail_item">Отправить</string>
     <string name="listdel_item">Удалить</string>
 
+    <string-array name="mainmenu">
+        <item>Главная</item>
+        <item>Список расходов</item>
+        <item>Отправка расходов</item>
+     </string-array>
+
+    <string name="drawer_open">Open nd</string>
+    <string name="drawer_close">Close nd</string>
 
 </resources>
