@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         return db;
     }
 
+    private static long back_pressed;
 
     FragmentTransaction fTrans;
 
@@ -91,6 +92,8 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
 
 
         if (savedInstanceState == null) {
+            selectItem(0);
+//
 //            fTrans = getFragmentManager().beginTransaction();
 //            fTrans.add(R.id.container, new PlaceholderFragment());
 //            fTrans.addToBackStack(null);
@@ -133,6 +136,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         // as you specify a parent activity in AndroidManifest.xml.
 
         if (mDrawerToggle.onOptionsItemSelected(item)){
+            showKeyboard(false);
             return true;
         }
         int id = item.getItemId();
@@ -150,6 +154,25 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
 //        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
 //        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void showKeyboard(boolean show) {
+        if (show) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(getCurrentFocus(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                // etSumma.setSelection(etSumma.getText().length());
+                //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            }
+        }else{
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                boolean b;
+                if (imm != null) {
+                    //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                    b = imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                }
+            }
     }
 
     @Override
@@ -206,6 +229,17 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
     }
+
+    @Override
+    public void onBackPressed() {
+        if (back_pressed + 2000 > System.currentTimeMillis())
+            super.onBackPressed();
+        else
+            Toast.makeText(getBaseContext(), "Нажмите еще раз для выхода",
+                    Toast.LENGTH_SHORT).show();
+        back_pressed = System.currentTimeMillis();
+    }
+
     private void selectItem(int position) {
 
         mTitle = mMainMenu[position];
