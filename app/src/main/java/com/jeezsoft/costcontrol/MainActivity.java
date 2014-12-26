@@ -29,7 +29,10 @@ import java.text.DecimalFormatSymbols;
 import java.util.regex.Pattern;
 
 
-public class MainActivity extends Activity implements onSomeEventListener, ListView.OnItemClickListener, CostItemListFragment.OnFragmentInteractionListener, View.OnClickListener {
+public class MainActivity extends Activity implements onSomeEventListener, ListView.OnItemClickListener,
+        CostItemListFragment.OnFragmentInteractionListener, ExpenditureListFragment.OnFragmentInteractionListener,
+        ExpenditureEditFragment.OnFragmentInteractionListener,
+        View.OnClickListener {
 
 
     private String[] mMainMenu;
@@ -40,7 +43,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     private String mTitle = "";
 
     CostItemListFragment costItemList;
-    float sum = 0;
+    Double sum = 0.00;
     DB db;
 
     public DB getDb() {
@@ -93,25 +96,17 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
 
         if (savedInstanceState == null) {
             selectItem(0);
-//
-//            fTrans = getFragmentManager().beginTransaction();
-//            fTrans.add(R.id.container, new PlaceholderFragment());
-//            fTrans.addToBackStack(null);
-//            fTrans.commit();
         }
         else {
-            sum = savedInstanceState.getFloat("sum", 0);
+            sum = savedInstanceState.getDouble("sum", 0.00);
         }
-
-//        Button btnList = (Button) findViewById(R.id.buttonList);
-//        btnList.setOnClickListener(this);
 
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putFloat("sum", sum);
+        outState.putDouble("sum", sum);
 
     }
 
@@ -142,9 +137,9 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -160,28 +155,32 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     public void showKeyboard(boolean show) {
         if (show) {
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
             if (imm != null) {
-                imm.showSoftInput(getCurrentFocus(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-                // etSumma.setSelection(etSumma.getText().length());
-                //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                View v = getCurrentFocus();
+                if (v != null) {
+                    imm.showSoftInput(getCurrentFocus(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                }
             }
         }else{
                 InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 boolean b;
-                if (imm != null) {
-                    //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                    b = imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                if (imm != null){
+                    View v = getCurrentFocus();
+                    if (v!=null) {
+                        b = imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
                 }
             }
     }
 
     @Override
-    public void someEvent(float sum) {
+    public void someEvent(Double sum) {
         this.sum = sum;
        // Toast.makeText(this, "summa = "+sum, Toast.LENGTH_LONG).show();
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, new CostItemListFragment());
-        fTrans.addToBackStack(null);
+        //fTrans.addToBackStack(null);
         fTrans.commit();
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         boolean b;
@@ -192,12 +191,13 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
 
     @Override
     public void onFragmentInteraction(Long id) {
-       // Toast.makeText(this, "id = "+id, Toast.LENGTH_LONG).show();
+
         db.addListRec(id, sum);
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, new PlaceholderFragment());
-        fTrans.addToBackStack(null);
+        //fTrans.addToBackStack(null);
         fTrans.commit();
+        Toast.makeText(this, "Добавлен расход:  "+sum+" руб.", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -208,13 +208,6 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     @Override
     public void onClick(View v) {
 
-//        switch (v.getId()){
-//            case R.id.buttonList: fTrans = getFragmentManager().beginTransaction();
-//                fTrans.replace(R.id.container, new CostListListFragment());
-//                fTrans.addToBackStack(null);
-//                fTrans.commit();
-//                break;
-//        }
 
     }
 
@@ -255,21 +248,53 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
                 fTrans.commit();
                 mDrawerLayout.closeDrawer(mDrawerList);
                 break;
+            case 3: fTrans = getFragmentManager().beginTransaction();
+                fTrans.replace(R.id.container, new ExpenditureListFragment());
+                fTrans.commit();
+                mDrawerLayout.closeDrawer(mDrawerList);
+                break;
+
         }
-        // update the main content by replacing fragments
-//        Fragment fragment = new CatFragment();
-//        Bundle args = new Bundle();
-//        args.putInt(CatFragment.ARG_CAT_NUMBER, position);
-//        fragment.setArguments(args);
-//
-//        FragmentManager fragmentManager = getFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-//
-//        // update selected item and title, then close the drawer
-//        mDrawerList.setItemChecked(position, true);
-//        setTitle(mCatTitles[position]);
-//        mDrawerLayout.closeDrawer(mDrawerList);
     }
 
 
+
+
+    @Override
+    public void onExpenditureSelected(int id, String name) {
+       //Toast.makeText(this, "expenditure selected. id:"+id, Toast.LENGTH_SHORT).show();
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, new ExpenditureEditFragment().newInstance((long) id, name));
+        //fTrans.addToBackStack(null);
+        fTrans.commit();
+    }
+
+    @Override
+    public void onExpenditureCancel() {
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, new ExpenditureListFragment());
+        fTrans.commit();
+    }
+
+    @Override
+    public void onExpenditureAdd() {
+        //Toast.makeText(this, "expenditure add.", Toast.LENGTH_SHORT).show();
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, new ExpenditureEditFragment());
+        //fTrans.addToBackStack(null);
+        fTrans.commit();
+    }
+
+    @Override
+    public void onExpenditureMustEdit(String name, Long id) {
+        if (id == null || id == 0) {
+            db.addExpenditure(name, R.drawable.exenditure_item);
+        }
+        else {
+            db.updateExpenditure(id, name);
+        }
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.replace(R.id.container, new ExpenditureListFragment());
+        fTrans.commit();
+    }
 }

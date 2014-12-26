@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
+
+    <TextView android:text="@string/hello_world"
+        android:id = "@+id/tvEditSumma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/etEditSumma"
+        android:layout_below="@id/tvEditSumma"
+        android:layout_alignParentTop="false"
+        android:textSize="60sp"
+        android:textColorHint="#ffededed"
+        android:focusable="true"
+        android:focusableInTouchMode="true"> <requestFocus /></EditText>
+
+    <TextView
+        android:text="@string/expenditure"
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etEditSumma"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/etEditExpenditureItem"
+        android:textSize="60sp"
+        android:textColorHint="#ffededed"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"> </EditText>
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnEditSave"
+        android:text="@string/buttonSave"
+        android:layout_below="@+id/etEditExpenditureItem"
+        android:layout_toLeftOf="@+id/btnEditCancel"
+        android:layout_toStartOf="@+id/btnEditCancel" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnEditCancel"
+        android:text="@string/buttonClose"
+        android:layout_below="@+id/etEditExpenditureItem"
+        android:layout_alignRight="@+id/etEditExpenditureItem"
+        android:layout_alignEnd="@+id/etEditExpenditureItem" />
+
+</RelativeLayout>

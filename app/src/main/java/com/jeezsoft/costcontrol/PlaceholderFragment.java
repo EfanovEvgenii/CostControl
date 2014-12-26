@@ -58,7 +58,7 @@ public class PlaceholderFragment extends Fragment implements View.OnClickListene
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putFloat("sum", Float.parseFloat(etSumma.getText().toString()));
+        outState.putDouble("sum", getSum());
     }
 
     @Override
@@ -81,29 +81,9 @@ public class PlaceholderFragment extends Fragment implements View.OnClickListene
             etSumma.setText(sum.toString());
         }
 
-//
-        //etSumma.requestFocus();
-        //etSumma.set
-        //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
+        mHandler.postDelayed(mShowInputMethodTask, 500);
 
-
-//        Runnable showingSoftKeyboard = new Runnable() {
-//            public void run() {
-//                try {
-//                    EditText edtText = (EditText) getActivity().getCurrentFocus();
-//                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-//                    inputMethodManager.showSoftInput(getActivity().getCurrentFocus(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-//                    edtText.setSelection(edtText.getText().length());
-//                } catch(Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        };
-//
-//        new Handler().postDelayed(showingSoftKeyboard, 100);
-        mHandler.postDelayed(mShowInputMethodTask, 100);
-        //mHandler.post(mShowInputMethodTask);
 
         return rootView;
     }
@@ -131,12 +111,12 @@ public class PlaceholderFragment extends Fragment implements View.OnClickListene
     /**
      * прячем программную клавиатуру
      */
-    protected void hideInputMethod() {
-        InputMethodManager imm = (InputMethodManager) ctx.getSystemService(ctx.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(etSumma.getWindowToken(), 0);
-        }
-    }
+//    protected void hideInputMethod() {
+//        InputMethodManager imm = (InputMethodManager) ctx.getSystemService(ctx.INPUT_METHOD_SERVICE);
+//        if (imm != null) {
+//            imm.hideSoftInputFromWindow(etSumma.getWindowToken(), 0);
+//        }
+//    }
 
     /**
      * показываем программную клавиатуру
@@ -147,15 +127,13 @@ public class PlaceholderFragment extends Fragment implements View.OnClickListene
         if (imm != null) {
             imm.showSoftInput(etSumma, InputMethodManager.RESULT_UNCHANGED_SHOWN);
             etSumma.setSelection(etSumma.getText().length());
-            //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
         }
     }
 
     private Runnable mShowInputMethodTask = new Runnable() {
         public void run() {
-            //Toast.makeText(ctx,"A!", Toast.LENGTH_LONG).show();
             showInputMethod();
-            //someEventListener.showKeyboard(true);
         }
     };
 
@@ -167,11 +145,21 @@ public class PlaceholderFragment extends Fragment implements View.OnClickListene
     }
 
     public void sumInput(){
-        float sum = Float.parseFloat(etSumma.getText().toString());
-        someEventListener.someEvent(sum);
+
+        someEventListener.someEvent(getSum());
 
     }
 
+    public Double getSum()
+    {
+        Double sum = 0.00;
+        String textSum = etSumma.getText().toString();
+        try{
+            sum = Double.parseDouble(textSum);
+        }catch (NumberFormatException e){};
+
+        return sum;
+    }
 
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {

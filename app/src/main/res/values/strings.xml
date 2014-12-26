@@ -3,19 +3,25 @@
 
     <string name="app_name">Контроль расходов</string>
     <string name="hello_world">Сумма:</string>
+    <string name="expenditure">Статья расхода:</string>
     <string name="action_settings">Настройки</string>
     <string name="buttonSumOK">OK</string>
     <string name="ListCaption">Список</string>
     <string name="menumail_item">Отправить</string>
     <string name="listdel_item">Удалить</string>
+    <string name="buttonSave">Сохранить</string>
+    <string name="buttonClose">Закрыть</string>
 
     <string-array name="mainmenu">
         <item>Главная</item>
         <item>Список расходов</item>
         <item>Отправка расходов</item>
-     </string-array>
+        <item>Статьи расходов</item>
+    </string-array>
 
     <string name="drawer_open">Open nd</string>
     <string name="drawer_close">Close nd</string>
+    <string name="menu_expenditure_list_add">Добавить</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

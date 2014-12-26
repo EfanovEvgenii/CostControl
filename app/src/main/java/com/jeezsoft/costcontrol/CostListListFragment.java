@@ -142,15 +142,8 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
         lvData.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         lvData.setMultiChoiceModeListener(this);
 
-
-
-        // добавляем контекстное меню к списку
-        //registerForContextMenu(lvData);
-
         // создаем лоадер для чтения данных
         getLoaderManager().initLoader(0, null, this);
-
-///
 
         return view;
     }
@@ -345,6 +338,7 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
+
 
     static class MyCursorLoader extends CursorLoader {
 

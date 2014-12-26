@@ -23,7 +23,6 @@
         android:layout_alignParentLeft="false"
         android:textSize="60sp"
         android:layout_toLeftOf="@+id/buttonSumOK"
-        android:hint="Сумма"
         android:textColorHint="#ffededed"
         android:focusable="true"
         android:focusableInTouchMode="true"> <requestFocus /></EditText>

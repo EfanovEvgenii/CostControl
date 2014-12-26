@@ -79,6 +79,10 @@ public class DB {
         return mDB.rawQuery(sqlQuery, null);
     }
 
+    public Cursor getAllExpenditure() {
+        return mDB.query(DB_TABLE, null, null, null, null, null, null);
+    }
+
     public Cursor getCostListForExport() {
         String sqlQuery = "select " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_DATE + ", " +
@@ -98,7 +102,20 @@ public class DB {
         mDB.insert(DB_TABLE, null, cv);
     }
 
-    public void addListRec(Long id, float sum) {
+    public void addExpenditure(String txt, int img) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_TXT, txt);
+        cv.put(COLUMN_IMG, img);
+        mDB.insert(DB_TABLE, null, cv);
+    }
+
+    public void updateExpenditure(Long id, String txt) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_TXT, txt);
+        mDB.update(DB_TABLE, cv, COLUMN_ID + "=" + id, null);
+    }
+
+    public void addListRec(Long id, Double sum) {
         ContentValues cv = new ContentValues();
         cv.put(LIST_COLUMN_IDCOST, id);
         cv.put(LIST_COLUMN_SUM, sum);
@@ -108,6 +125,11 @@ public class DB {
 
     // удалить запись из DB_TABLE
     public void delRec(long id) {
+        mDB.delete(DB_TABLE, COLUMN_ID + " = " + id, null);
+    }
+
+    // удалить запись из DB_TABLE
+    public void delExpenditure(long id) {
         mDB.delete(DB_TABLE, COLUMN_ID + " = " + id, null);
     }
 

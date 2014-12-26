@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
+
+      <TextView
+        android:text="@string/expenditure"
+        android:id="@+id/tvEditExpenditureName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/etEditExpenditureName"
+        android:textSize="30sp"
+        android:textColorHint="#ffededed"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_below="@+id/tvEditExpenditureName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:inputType="text" />
+
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnEditExpenditureSave"
+        android:text="@string/buttonSave"
+        android:layout_below="@+id/etEditExpenditureName"
+        android:layout_toLeftOf="@+id/btnEditExpenditureCancel"
+        android:layout_toStartOf="@+id/btnEditExpenditureCancel" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnEditExpenditureCancel"
+        android:text="@string/buttonClose"
+        android:layout_below="@+id/etEditExpenditureName"
+        android:layout_alignRight="@+id/etEditExpenditureName"
+        android:layout_alignEnd="@+id/etEditExpenditureName" />
+
+</RelativeLayout>
