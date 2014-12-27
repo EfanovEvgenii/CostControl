@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -31,7 +32,8 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends Activity implements onSomeEventListener, ListView.OnItemClickListener,
         CostItemListFragment.OnFragmentInteractionListener, ExpenditureListFragment.OnFragmentInteractionListener,
-        ExpenditureEditFragment.OnFragmentInteractionListener,
+        ExpenditureEditFragment.OnFragmentInteractionListener, SendingCostsFragment.OnFragmentInteractionListener,
+
         View.OnClickListener {
 
 
@@ -248,6 +250,11 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
                 fTrans.commit();
                 mDrawerLayout.closeDrawer(mDrawerList);
                 break;
+            case 2: fTrans = getFragmentManager().beginTransaction();
+                fTrans.replace(R.id.container, new SendingCostsFragment());
+                fTrans.commit();
+                mDrawerLayout.closeDrawer(mDrawerList);
+                break;
             case 3: fTrans = getFragmentManager().beginTransaction();
                 fTrans.replace(R.id.container, new ExpenditureListFragment());
                 fTrans.commit();
@@ -297,4 +304,11 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         fTrans.replace(R.id.container, new ExpenditureListFragment());
         fTrans.commit();
     }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+
 }

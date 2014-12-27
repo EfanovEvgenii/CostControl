@@ -74,7 +74,7 @@ public class DB {
                 DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST + ", " +
                 DB_TABLE + "." + COLUMN_TXT + " " +
                 "from " + DB_TABLE_LIST + " AS " + DB_TABLE_LIST + " " +
-                "inner join " + DB_TABLE + " AS "+ DB_TABLE + " ON " + DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST +" = " + DB_TABLE+"."+COLUMN_ID;
+                "left join " + DB_TABLE + " AS "+ DB_TABLE + " ON " + DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST +" = " + DB_TABLE+"."+COLUMN_ID;
 
         return mDB.rawQuery(sqlQuery, null);
     }
