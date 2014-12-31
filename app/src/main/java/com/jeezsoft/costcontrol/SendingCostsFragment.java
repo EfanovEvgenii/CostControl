@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -13,7 +14,10 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 
 /**
@@ -24,11 +28,14 @@ import java.util.Calendar;
  * Use the {@link SendingCostsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SendingCostsFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
+public class SendingCostsFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private static final int REQUEST_STARTDATE = 0;
+    private static final int REQUEST_FINISHDATE = 1;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -36,6 +43,13 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
 
     private TextView tvStartDate;
     private TextView tvFinishDate;
+
+    private int mYearStartDate;
+    private int mYearFinishDate;
+    private int mMonthStartDate;
+    private int mMonthFinishDate;
+    private int mDayStartDate;
+    private int mDayFinishDate;
 
     int DIALOG_DATE = 1;
 
@@ -60,7 +74,10 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
     }
 
     public SendingCostsFragment() {
-        // Required empty public constructor
+        Calendar c = Calendar.getInstance();
+        mYearStartDate = mYearFinishDate = c.get(Calendar.YEAR);
+        mMonthStartDate = mMonthFinishDate = c.get(Calendar.MONTH);
+        mDayStartDate = mDayFinishDate = c.get(Calendar.DAY_OF_MONTH);
     }
 
     @Override
@@ -86,11 +103,11 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+//    public void onButtonPressed(Uri uri) {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(uri);
+//        }
+//    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -112,46 +129,81 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
 
-        final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog dpd;
+//        final Calendar c = Calendar.getInstance();
+//        int year = c.get(Calendar.YEAR);
+//        int month = c.get(Calendar.MONTH);
+//        int day = c.get(Calendar.DAY_OF_MONTH);
+//        DatePickerDialog dpd;
 
         switch (v.getId()){
             case R.id.etSendingCostsStartDate:
-                dpd = new DatePickerDialog(getActivity(), this, year, month, day);
-                DIALOG_DATE = 1;
-                dpd.show();
-//                DialogFragment newFragment = new DateDialogFragment();
-//                newFragment.show(getFragmentManager(), "datePicker");
+//                dpd = new DatePickerDialog(getActivity(), this, year, month, day);
+//                DIALOG_DATE = 1;
+//                dpd.show();
+
+                  //  mListener.onDateMustSelect(year, month, day);
+
+                DatepickerFragment newFragmentStartDate = DatepickerFragment.newInstance(mYearStartDate, mMonthStartDate, mDayStartDate);
+                newFragmentStartDate.setTargetFragment(SendingCostsFragment.this, REQUEST_STARTDATE);
+                newFragmentStartDate.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.etSendingCostsFinishDate:
-                dpd = new DatePickerDialog(getActivity(), this, year, month, day);
-                DIALOG_DATE = 2;
-                dpd.show();
+//                dpd = new DatePickerDialog(getActivity(), this, year, month, day);
+//                DIALOG_DATE = 2;
+//                dpd.show();
+                DatepickerFragment newFragmentFinishDate = DatepickerFragment.newInstance(mYearStartDate, mMonthStartDate, mDayStartDate);
+                newFragmentFinishDate.setTargetFragment(SendingCostsFragment.this, REQUEST_FINISHDATE);
+                newFragmentFinishDate.show(getActivity().getFragmentManager(), "datePicker");
                 break;
         }
 
     }
 
     @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        switch (DIALOG_DATE){
-            case 1:
-                tvStartDate.setText(""+dayOfMonth+"-"+monthOfYear+"-"+year);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) return;
+        switch (requestCode){
+            case REQUEST_STARTDATE:
+                mYearStartDate = data.getIntExtra(DatepickerFragment.EXTRA_YEAR, 0);
+                mMonthStartDate = data.getIntExtra(DatepickerFragment.EXTRA_MONTH, 0);
+                mDayStartDate = data.getIntExtra(DatepickerFragment.EXTRA_DAY, 0);
+                setStartDate(mYearStartDate, mMonthStartDate, mDayStartDate);
                 break;
-            case 2:
-                tvFinishDate.setText(""+dayOfMonth+"-"+monthOfYear+"-"+year);
+            case REQUEST_FINISHDATE:
+                mYearFinishDate = data.getIntExtra(DatepickerFragment.EXTRA_YEAR, 0);
+                mMonthFinishDate = data.getIntExtra(DatepickerFragment.EXTRA_MONTH, 0);
+                mDayFinishDate = data.getIntExtra(DatepickerFragment.EXTRA_DAY, 0);
+                setFinishDate(mYearFinishDate, mMonthFinishDate, mDayFinishDate);
                 break;
-
         }
+
+    }
+
+
+
+    public void setStartDate(int year, int month, int day){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, day);
+        String datetime = sdf.format(cal.getTime());
+        tvStartDate.setText(datetime);
+    }
+
+    public void setFinishDate(int year, int month, int day){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, day);
+        String datetime = sdf.format(cal.getTime());
+        tvFinishDate.setText(datetime);
+
     }
 
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onDateMustSelect(int year, int month, int day);
     }
 
 

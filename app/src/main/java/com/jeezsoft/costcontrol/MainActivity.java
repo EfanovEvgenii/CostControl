@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -33,7 +34,6 @@ import java.util.regex.Pattern;
 public class MainActivity extends Activity implements onSomeEventListener, ListView.OnItemClickListener,
         CostItemListFragment.OnFragmentInteractionListener, ExpenditureListFragment.OnFragmentInteractionListener,
         ExpenditureEditFragment.OnFragmentInteractionListener, SendingCostsFragment.OnFragmentInteractionListener,
-
         View.OnClickListener {
 
 
@@ -251,7 +251,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
                 mDrawerLayout.closeDrawer(mDrawerList);
                 break;
             case 2: fTrans = getFragmentManager().beginTransaction();
-                fTrans.replace(R.id.container, new SendingCostsFragment());
+                fTrans.replace(R.id.container, new SendingCostsFragment(), "sendingCosts");
                 fTrans.commit();
                 mDrawerLayout.closeDrawer(mDrawerList);
                 break;
@@ -271,7 +271,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     public void onExpenditureSelected(int id, String name) {
        //Toast.makeText(this, "expenditure selected. id:"+id, Toast.LENGTH_SHORT).show();
         fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.container, new ExpenditureEditFragment().newInstance((long) id, name));
+        fTrans.replace(R.id.container, ExpenditureEditFragment.newInstance((long) id, name));
         //fTrans.addToBackStack(null);
         fTrans.commit();
     }
@@ -306,9 +306,24 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void onDateMustSelect(int year, int month, int day) {
+        fTrans = getFragmentManager().beginTransaction();
+        fTrans.add(R.id.container, DatepickerFragment.newInstance(year, month, day), "datePicker");
+        fTrans.commit();
     }
 
-
+//    @Override
+//    public void onDateSelected(int year, int month, int day) {
+//        android.app.FragmentManager fragmentManager = getFragmentManager();
+//        fTrans = fragmentManager.beginTransaction();
+//        fTrans.remove(fragmentManager.findFragmentByTag("datePicker"));
+//        fTrans.commit();
+//
+//        SendingCostsFragment sCF = (SendingCostsFragment) fragmentManager.findFragmentByTag("sendingCosts");
+//        if (sCF != null) {
+//            sCF.setStartDate(year,month,day);
+//            Toast.makeText(this, "Год: " + year + "\n" + "Месяц: "
+//                    + (month + 1) + "\n" + "День: " + day, Toast.LENGTH_LONG).show();
+//        }
+//    }
 }

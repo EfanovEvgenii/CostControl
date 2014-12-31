@@ -24,7 +24,8 @@
             android:id="@+id/etSendingCostsStartDate"
             android:layout_weight="0"
             android:layout_gravity="center_horizontal"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:gravity="center_horizontal" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,7 +42,8 @@
             android:id="@+id/etSendingCostsFinishDate"
             android:layout_weight="0"
             android:layout_gravity="center_horizontal"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:gravity="center_horizontal"/>
 
         <Button
             android:layout_width="wrap_content"
