@@ -26,5 +26,7 @@
     <string name="startdate">Дата начала</string>
     <string name="finishdate">Дата окончания</string>
     <string name="sendingcosts">Отправить</string>
+    <string name="date">Дата:</string>
+    <string name="NameSumma">Сумма:</string>
 
 </resources>

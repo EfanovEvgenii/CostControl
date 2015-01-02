@@ -36,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A fragment representing a list of Items.
@@ -52,6 +53,9 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private static final int REQUEST_EDITCOST = 0;
+
 
 
     // TODO: Rename and change types of parameters
@@ -115,18 +119,6 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_list, container, false);
 
-//        db = new DB(getActivity());
-//        db.open();
-
-        //cursor = db.getAllCostList();
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//                Toast.makeText(getActivity(), cursor.getString(1), Toast.LENGTH_SHORT).show();
-//            } while (cursor.moveToNext());
-//        }
-        //this.getActivity().startManagingCursor(cursor);
-
         String[] from = new String[] {DB.LIST_COLUMN_DATE, DB.COLUMN_TXT, DB.LIST_COLUMN_SUM, DB.LIST_COLUMN_ID};
         int[] to = new int[] {R.id.tvListDate, R.id.tvListText, R.id.tvListSum, R.id.tvListId};
 
@@ -188,84 +180,71 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_costlist, menu);
+        //inflater.inflate(R.menu.menu_costlist, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
-            case R.id.sendmail_item:
-                Toast.makeText(getActivity(),"Отправка почты",Toast.LENGTH_SHORT).show();
-                boolean filecreated = false;
-                String DIR_SD = "CostControl";
-                String FILENAME_SD = "list.csv";
-                if (!Environment.getExternalStorageState().equals(
-                        Environment.MEDIA_MOUNTED)) {
-                    //Log.d(LOG_TAG, "SD-карта не доступна: " + Environment.getExternalStorageState());
-                    break;
-                }
-                // получаем путь к SD
-                File sdPath = Environment.getExternalStorageDirectory();
-                // добавляем свой каталог к пути
-                sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
-                // создаем каталог
-                sdPath.mkdirs();
-                // формируем объект File, который содержит путь к файлу
-                File sdFile = new File(sdPath, FILENAME_SD);
-                try {
-                    // открываем поток для записи
-                    BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
-                    Cursor cursor = db.getCostListForExport();
-
-                    if (cursor.moveToFirst()) {
-                        do {
-                            String listString = "";
-                            for (int i=0; i<cursor.getColumnCount();i++) {
-                                //Toast.makeText(getActivity(), cursor.getString(i), Toast.LENGTH_SHORT).show();
-                                listString = listString + cursor.getString(i) + ((i==cursor.getColumnCount()-1) ? "" : ";");
-                            }
-                            bw.write(listString+"\n");
-                        } while (cursor.moveToNext());
-                    }
-                        //this.getActivity().startManagingCursor(cursor);
-                    // пишем данные
-                    //bw.write("Содержимое файла на SD");
-                    // закрываем поток
-                    bw.close();
-                    filecreated = true;
-                    //Log.d(LOG_TAG, "Файл записан на SD: " + sdFile.getAbsolutePath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                if (filecreated && sdFile != null) {
-
-                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                    sharingIntent.setType("*/*");
-                    String[] to = new String[]{""};
-                    sharingIntent.putExtra(Intent.EXTRA_EMAIL, to);
-                    sharingIntent.putExtra(Intent.EXTRA_TEXT, "Отчет по расходам в формате csv");
-                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(sdFile));
-
-                    sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Отчет по расходам");
-
-//                    ArrayList<Uri> uris = new ArrayList<Uri>();
-//                    String[] filePaths = new String[] {"list.csv"};
-//                    for (String file : filePaths)
-//                    {
-//                        File fileIn = new File(file);
-//                        Uri u = Uri.fromFile(fileIn);
-//                        uris.add(u);
-//                       }
-//                    sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-
-                    startActivity(Intent.createChooser(sharingIntent, "Send email"));
-                }
-                break;
-        }
-
+//        switch (item.getItemId()){
+//            case R.id.sendmail_item:
+//                Toast.makeText(getActivity(),"Отправка почты",Toast.LENGTH_SHORT).show();
+//                boolean filecreated = false;
+//                String DIR_SD = "CostControl";
+//                String FILENAME_SD = "list.csv";
+//                if (!Environment.getExternalStorageState().equals(
+//                        Environment.MEDIA_MOUNTED)) {
+//                    //Log.d(LOG_TAG, "SD-карта не доступна: " + Environment.getExternalStorageState());
+//                    break;
+//                }
+//                // получаем путь к SD
+//                File sdPath = Environment.getExternalStorageDirectory();
+//                // добавляем свой каталог к пути
+//                sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+//                // создаем каталог
+//                sdPath.mkdirs();
+//                // формируем объект File, который содержит путь к файлу
+//                File sdFile = new File(sdPath, FILENAME_SD);
+//                try {
+//                    // открываем поток для записи
+//                    BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+//                    Cursor cursor = db.getCostListForExport();
+//
+//                    if (cursor.moveToFirst()) {
+//                        do {
+//                            String listString = "";
+//                            for (int i=0; i<cursor.getColumnCount();i++) {
+//                                //Toast.makeText(getActivity(), cursor.getString(i), Toast.LENGTH_SHORT).show();
+//                                listString = listString + cursor.getString(i) + ((i==cursor.getColumnCount()-1) ? "" : ";");
+//                            }
+//                            bw.write(listString+"\n");
+//                        } while (cursor.moveToNext());
+//                    }
+//
+//                    bw.close();
+//                    filecreated = true;
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                if (filecreated && sdFile != null) {
+//
+//                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+//                    sharingIntent.setType("*/*");
+//                    String[] to = new String[]{""};
+//                    sharingIntent.putExtra(Intent.EXTRA_EMAIL, to);
+//                    sharingIntent.putExtra(Intent.EXTRA_TEXT, "Отчет по расходам в формате csv");
+//                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(sdFile));
+//
+//                    sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Отчет по расходам");
+//
+//                    startActivity(Intent.createChooser(sharingIntent, "Send email"));
+//                }
+//                break;
+//        }
+//
         return super.onOptionsItemSelected(item);
     }
 
@@ -289,11 +268,24 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(id);
-           }
+        Cursor curRow = (Cursor) lvData.getItemAtPosition(position);
+        int IDindex = curRow.getColumnIndex(db.LIST_COLUMN_ID);
+        int SUMindex = curRow.getColumnIndex(db.LIST_COLUMN_SUM);
+        int DATEindex = curRow.getColumnIndex(db.LIST_COLUMN_MDATE);
+        int IDCOSTindex = curRow.getColumnIndex(db.LIST_COLUMN_IDCOST);
+        int NAMECOSTindex = curRow.getColumnIndex(db.COLUMN_TXT);
+
+        Long curId = curRow.getLong(IDindex);
+        Long curMDate = curRow.getLong(DATEindex)*1000;
+        Long curIdExpenditure = curRow.getLong(IDCOSTindex);
+        String curNameExpenditure = curRow.getString(NAMECOSTindex);
+        Double curSum = curRow.getDouble(SUMindex);
+
+
+        CostEditFragment costEditFragment = CostEditFragment.newInstance(curId, curMDate, curIdExpenditure, curNameExpenditure, curSum);
+        costEditFragment.setTargetFragment(CostListListFragment.this, REQUEST_EDITCOST);
+        costEditFragment.show(getActivity().getFragmentManager(), "editCost");
+
     }
 
     /**
@@ -322,6 +314,23 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Long id);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) return;
+
+        switch (requestCode){
+            case REQUEST_EDITCOST:
+                Long id = data.getLongExtra(CostEditFragment.EXTRA_ID, 0L);
+                Long mDate = data.getLongExtra(CostEditFragment.EXTRA_DATE, 0L);
+                Double mSum = data.getDoubleExtra(CostEditFragment.EXTRA_SUMMA, 0.00);
+                Long mIdExpenditure = data.getLongExtra(CostEditFragment.EXTRA_ID_EXPENDITURE, 0L);
+                db.updateCostListRec(id, mSum, mDate/1000, mIdExpenditure);
+                getLoaderManager().getLoader(0).forceLoad();
+                break;
+
+        }
     }
 
     @Override

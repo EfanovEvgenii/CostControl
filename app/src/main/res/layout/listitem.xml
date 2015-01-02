@@ -31,6 +31,7 @@
         android:textSize="18sp"
             android:textColor="#ffbfbfbf">
     </TextView>
+
     </LinearLayout>
     <TextView
         android:id="@+id/tvListSum"

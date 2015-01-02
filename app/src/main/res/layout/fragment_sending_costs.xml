@@ -25,7 +25,11 @@
             android:layout_weight="0"
             android:layout_gravity="center_horizontal"
             android:textSize="30sp"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:background="@color/DateColorBackground"
+            android:padding="10dp"
+            android:focusable="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -43,7 +47,10 @@
             android:layout_weight="0"
             android:layout_gravity="center_horizontal"
             android:textSize="30sp"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:background="@android:drawable/btn_dropdown"
+             />
 
         <Button
             android:layout_width="wrap_content"

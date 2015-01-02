@@ -7,12 +7,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 /**
  * Created by jeezic on 07.12.2014.
  */
 public class DB {
     private static final String DB_NAME = "my_db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static final String DB_TABLE = "costItems";
 
     public static final String COLUMN_ID = "_id";
@@ -22,6 +25,7 @@ public class DB {
     private static final String DB_TABLE_LIST = "_list";
     public static final String LIST_COLUMN_ID = "_id";
     public static final String LIST_COLUMN_DATE = "_date";
+    public static final String LIST_COLUMN_MDATE = "_mdate";
     public static final String LIST_COLUMN_SUM = "sum";
     public static final String LIST_COLUMN_IDCOST = "idcost";
 
@@ -37,6 +41,14 @@ public class DB {
             "create table " + DB_TABLE_LIST + "("+
                     LIST_COLUMN_ID + " integer primary key autoincrement, " +
                     LIST_COLUMN_DATE + " text not null default(DATETIME('now', 'localtime'))," +
+                    LIST_COLUMN_SUM + " real, " +
+                    LIST_COLUMN_IDCOST + " integer);";
+
+    private static final String DB_CREATE_TABLE_LIST_2 =
+            "create table " + DB_TABLE_LIST + "("+
+                    LIST_COLUMN_ID + " integer primary key autoincrement, " +
+                    LIST_COLUMN_DATE + " text not null default(DATETIME('now', 'localtime')), " +
+                    LIST_COLUMN_MDATE + " integer, " +
                     LIST_COLUMN_SUM + " real, " +
                     LIST_COLUMN_IDCOST + " integer);";
 
@@ -69,7 +81,8 @@ public class DB {
     public Cursor getAllCostList() {
         String sqlQuery = "select " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_ID + ", " +
-                DB_TABLE_LIST+"."+LIST_COLUMN_DATE + ", " +
+                "datetime("+DB_TABLE_LIST+"."+LIST_COLUMN_MDATE+", 'unixepoch', 'localtime')" + " AS "+LIST_COLUMN_DATE+", " +
+                DB_TABLE_LIST+"."+LIST_COLUMN_MDATE + ", " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_SUM + ", " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST + ", " +
                 DB_TABLE + "." + COLUMN_TXT + " " +
@@ -85,7 +98,7 @@ public class DB {
 
     public Cursor getCostListForExport() {
         String sqlQuery = "select " +
-                DB_TABLE_LIST+"."+LIST_COLUMN_DATE + ", " +
+                "datetime("+DB_TABLE_LIST+"."+LIST_COLUMN_MDATE+", 'unixepoch', 'localtime')" + " AS "+LIST_COLUMN_DATE+", " +
                 DB_TABLE + "." + COLUMN_TXT + ", " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_SUM + " " +
                 "from " + DB_TABLE_LIST + " AS " + DB_TABLE_LIST + " " +
@@ -115,10 +128,25 @@ public class DB {
         mDB.update(DB_TABLE, cv, COLUMN_ID + "=" + id, null);
     }
 
-    public void addListRec(Long id, Double sum) {
+    public void updateCostListRec(Long id, Double sum, Long date, Long idExpenditure) {
+        ContentValues cv = new ContentValues();
+        cv.put(LIST_COLUMN_IDCOST, idExpenditure);
+        cv.put(LIST_COLUMN_MDATE, date);
+        cv.put(LIST_COLUMN_SUM, sum);
+        mDB.update(DB_TABLE_LIST, cv, LIST_COLUMN_ID + "=" + id, null);
+    }
+
+    public void addListRec(Long id, Double sum, Long date) {
         ContentValues cv = new ContentValues();
         cv.put(LIST_COLUMN_IDCOST, id);
         cv.put(LIST_COLUMN_SUM, sum);
+        if (date == 0){
+            Calendar cal = Calendar.getInstance();
+            Long _date = cal.getTimeInMillis()/1000;
+            cv.put(LIST_COLUMN_MDATE, _date);
+        }else {
+            cv.put(LIST_COLUMN_MDATE, date);
+        }
         mDB.insert(DB_TABLE_LIST, null, cv);
     }
 
@@ -149,7 +177,7 @@ public class DB {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(DB_CREATE_TABLE);
-            db.execSQL(DB_CREATE_TABLE_LIST);
+            db.execSQL(DB_CREATE_TABLE_LIST_2);
 
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_TXT, "Супермаркет");
@@ -171,76 +199,17 @@ public class DB {
             cv.put(COLUMN_IMG, R.drawable.ic_launcher);
             db.insert(DB_TABLE, null, cv);
 
-//
-//            cv.clear();
-//            cv.put(LIST_COLUMN_IDCOST, 0);
-//            cv.put(LIST_COLUMN_SUM, 500);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 1);
-//            cv.put(LIST_COLUMN_SUM, 200);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 1);
-//            cv.put(LIST_COLUMN_SUM, 1300);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 3);
-//            cv.put(LIST_COLUMN_SUM, 45345.45);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 3);
-//            cv.put(LIST_COLUMN_SUM, 500);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 5);
-//            cv.put(LIST_COLUMN_SUM, 200);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 1);
-//            cv.put(LIST_COLUMN_SUM, 1300);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 4);
-//            cv.put(LIST_COLUMN_SUM, 45345.45);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 0);
-//            cv.put(LIST_COLUMN_SUM, 500);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 1);
-//            cv.put(LIST_COLUMN_SUM, 200);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 1);
-//            cv.put(LIST_COLUMN_SUM, 1300);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 3);
-//            cv.put(LIST_COLUMN_SUM, 45345.45);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 3);
-//            cv.put(LIST_COLUMN_SUM, 500);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 5);
-//            cv.put(LIST_COLUMN_SUM, 200);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 1);
-//            cv.put(LIST_COLUMN_SUM, 1300);
-//            db.insert(DB_TABLE_LIST, null, cv);
-//
-//            cv.put(LIST_COLUMN_IDCOST, 4);
-//            cv.put(LIST_COLUMN_SUM, 45345.45);
-//            db.insert(DB_TABLE_LIST, null, cv);
-
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+            if (newVersion == 2){
+
+                db.execSQL("ALTER TABLE " + DB_TABLE_LIST + " ADD " + LIST_COLUMN_MDATE + " integer ");
+                db.execSQL("UPDATE " + DB_TABLE_LIST + " SET " + LIST_COLUMN_MDATE + " = " + "strftime('%s',"+LIST_COLUMN_DATE+")" + " WHERE 1=1");
+
+            }
 
         }
     }

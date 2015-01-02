@@ -4,8 +4,11 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -27,6 +30,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormatSymbols;
 import java.util.regex.Pattern;
 
@@ -194,7 +201,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     @Override
     public void onFragmentInteraction(Long id) {
 
-        db.addListRec(id, sum);
+        db.addListRec(id, sum, 0L);
         fTrans = getFragmentManager().beginTransaction();
         fTrans.replace(R.id.container, new PlaceholderFragment());
         //fTrans.addToBackStack(null);
@@ -306,24 +313,58 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     }
 
     @Override
-    public void onDateMustSelect(int year, int month, int day) {
-        fTrans = getFragmentManager().beginTransaction();
-        fTrans.add(R.id.container, DatepickerFragment.newInstance(year, month, day), "datePicker");
-        fTrans.commit();
-    }
+    public void onSendCosts(int yearStart, int monthStart, int dayStart, int yearFinish, int monthFinish, int dayFinish) {
+        Toast.makeText(this,"Отправка почты",Toast.LENGTH_SHORT).show();
+        boolean filecreated = false;
+        String DIR_SD = "CostControl";
+        String FILENAME_SD = "list.csv";
+        if (!Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+            Toast.makeText(this,"SD-карта не доступна: ",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // получаем путь к SD
+        File sdPath = Environment.getExternalStorageDirectory();
+        // добавляем свой каталог к пути
+        sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+        // создаем каталог
+        sdPath.mkdirs();
+        // формируем объект File, который содержит путь к файлу
+        File sdFile = new File(sdPath, FILENAME_SD);
+        try {
+            // открываем поток для записи
+            BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+            Cursor cursor = db.getCostListForExport();
 
-//    @Override
-//    public void onDateSelected(int year, int month, int day) {
-//        android.app.FragmentManager fragmentManager = getFragmentManager();
-//        fTrans = fragmentManager.beginTransaction();
-//        fTrans.remove(fragmentManager.findFragmentByTag("datePicker"));
-//        fTrans.commit();
-//
-//        SendingCostsFragment sCF = (SendingCostsFragment) fragmentManager.findFragmentByTag("sendingCosts");
-//        if (sCF != null) {
-//            sCF.setStartDate(year,month,day);
-//            Toast.makeText(this, "Год: " + year + "\n" + "Месяц: "
-//                    + (month + 1) + "\n" + "День: " + day, Toast.LENGTH_LONG).show();
-//        }
-//    }
+            if (cursor.moveToFirst()) {
+                do {
+                    String listString = "";
+                    for (int i=0; i<cursor.getColumnCount();i++) {
+                        //Toast.makeText(getActivity(), cursor.getString(i), Toast.LENGTH_SHORT).show();
+                        listString = listString + cursor.getString(i) + ((i==cursor.getColumnCount()-1) ? "" : ";");
+                    }
+                    bw.write(listString+"\n");
+                } while (cursor.moveToNext());
+            }
+
+            bw.close();
+            filecreated = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (filecreated && sdFile != null) {
+
+            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+            sharingIntent.setType("*/*");
+            String[] to = new String[]{""};
+            sharingIntent.putExtra(Intent.EXTRA_EMAIL, to);
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, "Отчет по расходам в формате csv");
+            sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(sdFile));
+
+            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Отчет по расходам");
+
+            startActivity(Intent.createChooser(sharingIntent, "Send email"));
+        }
+    }
 }

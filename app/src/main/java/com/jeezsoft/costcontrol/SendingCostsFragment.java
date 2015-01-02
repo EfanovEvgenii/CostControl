@@ -11,6 +11,7 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
@@ -99,15 +100,11 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
         tvStartDate.setOnClickListener(this);
         tvFinishDate.setOnClickListener(this);
 
+        Button btnSend = (Button) rootView.findViewById(R.id.btnSendingCostsSend);
+        btnSend.setOnClickListener(this);
+
         return rootView;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -129,32 +126,23 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
     @Override
     public void onClick(View v) {
 
-//        final Calendar c = Calendar.getInstance();
-//        int year = c.get(Calendar.YEAR);
-//        int month = c.get(Calendar.MONTH);
-//        int day = c.get(Calendar.DAY_OF_MONTH);
-//        DatePickerDialog dpd;
-
         switch (v.getId()){
             case R.id.etSendingCostsStartDate:
-//                dpd = new DatePickerDialog(getActivity(), this, year, month, day);
-//                DIALOG_DATE = 1;
-//                dpd.show();
-
-                  //  mListener.onDateMustSelect(year, month, day);
 
                 DatepickerFragment newFragmentStartDate = DatepickerFragment.newInstance(mYearStartDate, mMonthStartDate, mDayStartDate);
                 newFragmentStartDate.setTargetFragment(SendingCostsFragment.this, REQUEST_STARTDATE);
                 newFragmentStartDate.show(getActivity().getFragmentManager(), "datePicker");
                 break;
             case R.id.etSendingCostsFinishDate:
-//                dpd = new DatePickerDialog(getActivity(), this, year, month, day);
-//                DIALOG_DATE = 2;
-//                dpd.show();
+
                 DatepickerFragment newFragmentFinishDate = DatepickerFragment.newInstance(mYearStartDate, mMonthStartDate, mDayStartDate);
                 newFragmentFinishDate.setTargetFragment(SendingCostsFragment.this, REQUEST_FINISHDATE);
                 newFragmentFinishDate.show(getActivity().getFragmentManager(), "datePicker");
                 break;
+            case R.id.btnSendingCostsSend:
+                if (mListener != null){
+                    mListener.onSendCosts(mYearStartDate, mMonthStartDate, mDayStartDate, mYearFinishDate, mMonthFinishDate, mDayFinishDate);
+                }
         }
 
     }
@@ -203,7 +191,7 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onDateMustSelect(int year, int month, int day);
+        public void onSendCosts(int yearStart, int monthStart, int dayStart, int yearFinish, int monthFinish, int dayFinish);
     }
 
 

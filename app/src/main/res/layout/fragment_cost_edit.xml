@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
+
+    <TextView android:text="@string/NameSumma"
+        android:id = "@+id/tvCostEditSumma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/etCostEditSumma"
+        android:layout_below="@id/tvCostEditSumma"
+        android:layout_alignParentTop="false"
+        android:textSize="60sp"
+        android:textColorHint="#ffededed"
+        android:focusable="true"
+        android:focusableInTouchMode="true"> <requestFocus /></EditText>
+
+    <TextView
+        android:text="@string/expenditure"
+        android:id="@+id/tvCostEditExpenditure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etCostEditSumma"
+        android:layout_centerHorizontal="true" />
+
+    <Spinner
+        android:id="@+id/spCostEditExpenditure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_below="@id/tvCostEditExpenditure"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dialog">
+    </Spinner>
+
+    <TextView
+        android:text="@string/date"
+        android:id="@+id/tvCostEditDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spCostEditExpenditure"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/etCostEditDate"
+        android:textSize="20sp"
+        android:textColorHint="#ffededed"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_below="@+id/tvCostEditDate"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:inputType="datetime"
+        android:background="@android:drawable/btn_dropdown"/>
+
+</RelativeLayout>
