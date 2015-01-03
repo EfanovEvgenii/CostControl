@@ -39,7 +39,9 @@
         android:textSize="20sp"
         android:layout_below="@id/tvCostEditExpenditure"
         android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dialog">
+        android:spinnerMode="dialog"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
     </Spinner>
 
     <TextView

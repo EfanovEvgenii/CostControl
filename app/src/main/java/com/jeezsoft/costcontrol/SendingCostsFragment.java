@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -44,6 +45,7 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
 
     private TextView tvStartDate;
     private TextView tvFinishDate;
+    private EditText etEmail;
 
     private int mYearStartDate;
     private int mYearFinishDate;
@@ -94,6 +96,9 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_sending_costs, container, false);
+
+        etEmail = (EditText) rootView.findViewById(R.id.etSendingCostsEmail);
+
         tvStartDate = (TextView) rootView.findViewById(R.id.etSendingCostsStartDate);
         tvFinishDate = (TextView) rootView.findViewById(R.id.etSendingCostsFinishDate);
 
@@ -141,7 +146,7 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
                 break;
             case R.id.btnSendingCostsSend:
                 if (mListener != null){
-                    mListener.onSendCosts(mYearStartDate, mMonthStartDate, mDayStartDate, mYearFinishDate, mMonthFinishDate, mDayFinishDate);
+                    mListener.onSendCosts(mYearStartDate, mMonthStartDate, mDayStartDate, mYearFinishDate, mMonthFinishDate, mDayFinishDate, etEmail.getText().toString());
                 }
         }
 
@@ -191,7 +196,7 @@ public class SendingCostsFragment extends Fragment implements View.OnClickListen
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onSendCosts(int yearStart, int monthStart, int dayStart, int yearFinish, int monthFinish, int dayFinish);
+        public void onSendCosts(int yearStart, int monthStart, int dayStart, int yearFinish, int monthFinish, int dayFinish, String email);
     }
 
 

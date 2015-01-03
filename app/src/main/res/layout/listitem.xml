@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="?android:attr/activatedBackgroundIndicator">
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:paddingRight="10dp"
+    android:paddingEnd="10dp"
+    android:paddingLeft="10dp"
+    android:paddingStart="10dp">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/llFirstColumn"
         android:orientation="vertical">
 
         <TextView
@@ -16,7 +21,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
             android:text=""
             android:textSize="18sp">
         </TextView>
@@ -26,10 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="10dp"
         android:text=""
         android:textSize="18sp"
-            android:textColor="#ffbfbfbf">
+        android:textColor="#ffbfbfbf">
     </TextView>
 
     </LinearLayout>
@@ -37,19 +40,13 @@
         android:id="@+id/tvListSum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
         android:text=""
         android:textSize="22sp"
-        android:gravity="bottom|right">
-    </TextView>
-    <TextView
-        android:id="@+id/tvListId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:text=""
-        android:textSize="22sp"
-        android:gravity="bottom|right">
+        android:layout_alignEnd="@id/llFirstColumn"
+        android:layout_alignRight="@id/llFirstColumn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true">
     </TextView>
 
-</LinearLayout>
+</RelativeLayout>

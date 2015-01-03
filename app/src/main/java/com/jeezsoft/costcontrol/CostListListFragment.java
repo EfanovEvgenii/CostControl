@@ -8,6 +8,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -103,7 +105,7 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
 
-        db = ((MainActivity)getActivity()).getDb();
+        db = getDb();
 //        if (getArguments() != null) {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
@@ -119,10 +121,11 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_list, container, false);
 
-        String[] from = new String[] {DB.LIST_COLUMN_DATE, DB.COLUMN_TXT, DB.LIST_COLUMN_SUM, DB.LIST_COLUMN_ID};
-        int[] to = new int[] {R.id.tvListDate, R.id.tvListText, R.id.tvListSum, R.id.tvListId};
+        String[] from = new String[] {DB.LIST_COLUMN_MDATE, DB.COLUMN_TXT, DB.LIST_COLUMN_SUM};//, DB.LIST_COLUMN_ID};
+        int[] to = new int[] {R.id.tvListDate, R.id.tvListText, R.id.tvListSum};//, R.id.tvListId};
 
         scAdapter = new SimpleCursorAdapter(this.getActivity(), R.layout.listitem, null, from, to, 0);
+        scAdapter.setViewBinder(new MyViewBinder());
 
         //final ListView
         lvData = (ListView) view.findViewById(R.id.lvListData);
@@ -140,6 +143,27 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
         return view;
     }
 
+    class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
+
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+
+            switch (view.getId()) {
+                case R.id.tvListSum:
+                    Double sum = cursor.getDouble(columnIndex);
+                    ((TextView)view).setText(sum.toString());
+                    ((TextView) view).setTextColor(Color.BLUE);
+                    return true;
+                case R.id.tvListDate:
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                    ((TextView)view).setText(sdf.format(new Date(cursor.getLong(columnIndex)*1000)));
+                    return true;
+
+            }
+            return false;
+        }
+    }
+
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         mode.getMenuInflater().inflate(R.menu.menu_costlist_actionmode, menu);
         return true;
@@ -155,9 +179,9 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
         for (int i = 0; i < sparseBooleanArray.size(); i++) {
             if (sparseBooleanArray.valueAt(i)) {
                 Cursor curRow = (Cursor) lvData.getItemAtPosition(sparseBooleanArray.keyAt(i));
-                int IDindex = curRow.getColumnIndex(db.LIST_COLUMN_ID);
+                int IDindex = curRow.getColumnIndex(DB.LIST_COLUMN_ID);
                 int curId = curRow.getInt(IDindex);
-                db.delListRec(curId);
+                getDb().delListRec(curId);
                 getLoaderManager().getLoader(0).forceLoad();
 
             }
@@ -269,11 +293,11 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor curRow = (Cursor) lvData.getItemAtPosition(position);
-        int IDindex = curRow.getColumnIndex(db.LIST_COLUMN_ID);
-        int SUMindex = curRow.getColumnIndex(db.LIST_COLUMN_SUM);
-        int DATEindex = curRow.getColumnIndex(db.LIST_COLUMN_MDATE);
-        int IDCOSTindex = curRow.getColumnIndex(db.LIST_COLUMN_IDCOST);
-        int NAMECOSTindex = curRow.getColumnIndex(db.COLUMN_TXT);
+        int IDindex = curRow.getColumnIndex(DB.LIST_COLUMN_ID);
+        int SUMindex = curRow.getColumnIndex(DB.LIST_COLUMN_SUM);
+        int DATEindex = curRow.getColumnIndex(DB.LIST_COLUMN_MDATE);
+        int IDCOSTindex = curRow.getColumnIndex(DB.LIST_COLUMN_IDCOST);
+        int NAMECOSTindex = curRow.getColumnIndex(DB.COLUMN_TXT);
 
         Long curId = curRow.getLong(IDindex);
         Long curMDate = curRow.getLong(DATEindex)*1000;
@@ -326,11 +350,19 @@ public class CostListListFragment extends Fragment implements AbsListView.OnItem
                 Long mDate = data.getLongExtra(CostEditFragment.EXTRA_DATE, 0L);
                 Double mSum = data.getDoubleExtra(CostEditFragment.EXTRA_SUMMA, 0.00);
                 Long mIdExpenditure = data.getLongExtra(CostEditFragment.EXTRA_ID_EXPENDITURE, 0L);
-                db.updateCostListRec(id, mSum, mDate/1000, mIdExpenditure);
+
+                getDb().updateCostListRec(id, mSum, mDate/1000, mIdExpenditure);
                 getLoaderManager().getLoader(0).forceLoad();
                 break;
 
         }
+    }
+
+    public DB getDb(){
+        if (db == null) {
+            db = ((MainActivity) getActivity()).getDb();
+        }
+        return db;
     }
 
     @Override

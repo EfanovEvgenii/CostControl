@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormatSymbols;
+import java.util.Calendar;
 import java.util.regex.Pattern;
 
 
@@ -50,6 +51,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     private ActionBarDrawerToggle mDrawerToggle;
 
     private String mTitle = "";
+    private int mDrawerItem = 0;
 
     CostItemListFragment costItemList;
     Double sum = 0.00;
@@ -79,12 +81,16 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close){
             @Override
             public void onDrawerOpened(View drawerView) {
+                showKeyboard(false);
                 getActionBar().setTitle("Выбор");
                 invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
+                if (mDrawerItem == 0){
+                    showKeyboard(true);
+                }
                 getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu();
             }
@@ -140,7 +146,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         // as you specify a parent activity in AndroidManifest.xml.
 
         if (mDrawerToggle.onOptionsItemSelected(item)){
-            showKeyboard(false);
+            //showKeyboard(false);
             return true;
         }
         int id = item.getItemId();
@@ -245,6 +251,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     private void selectItem(int position) {
 
         mTitle = mMainMenu[position];
+        mDrawerItem = position;
 
         switch (position){
             case 0: fTrans = getFragmentManager().beginTransaction();
@@ -313,7 +320,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     }
 
     @Override
-    public void onSendCosts(int yearStart, int monthStart, int dayStart, int yearFinish, int monthFinish, int dayFinish) {
+    public void onSendCosts(int yearStart, int monthStart, int dayStart, int yearFinish, int monthFinish, int dayFinish, String email) {
         Toast.makeText(this,"Отправка почты",Toast.LENGTH_SHORT).show();
         boolean filecreated = false;
         String DIR_SD = "CostControl";
@@ -334,7 +341,13 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         try {
             // открываем поток для записи
             BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
-            Cursor cursor = db.getCostListForExport();
+            Calendar cal = Calendar.getInstance();
+            cal.set(yearStart, monthStart, dayStart);
+            Long millisStart = cal.getTimeInMillis();
+            cal.set(yearFinish, monthFinish, dayFinish);
+            Long millisFinish = cal.getTimeInMillis();
+
+            Cursor cursor = db.getCostListForExport(millisStart, millisFinish);
 
             if (cursor.moveToFirst()) {
                 do {
@@ -357,7 +370,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
 
             Intent sharingIntent = new Intent(Intent.ACTION_SEND);
             sharingIntent.setType("*/*");
-            String[] to = new String[]{""};
+            String[] to = new String[]{email};
             sharingIntent.putExtra(Intent.EXTRA_EMAIL, to);
             sharingIntent.putExtra(Intent.EXTRA_TEXT, "Отчет по расходам в формате csv");
             sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(sdFile));

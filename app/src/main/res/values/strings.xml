@@ -28,5 +28,6 @@
     <string name="sendingcosts">Отправить</string>
     <string name="date">Дата:</string>
     <string name="NameSumma">Сумма:</string>
+    <string name="email">E-mail адрес:</string>
 
 </resources>

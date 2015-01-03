@@ -81,7 +81,6 @@ public class DB {
     public Cursor getAllCostList() {
         String sqlQuery = "select " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_ID + ", " +
-                "datetime("+DB_TABLE_LIST+"."+LIST_COLUMN_MDATE+", 'unixepoch', 'localtime')" + " AS "+LIST_COLUMN_DATE+", " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_MDATE + ", " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_SUM + ", " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST + ", " +
@@ -96,15 +95,16 @@ public class DB {
         return mDB.query(DB_TABLE, null, null, null, null, null, null);
     }
 
-    public Cursor getCostListForExport() {
+    public Cursor getCostListForExport(Long millisStart, Long millisFinish) {
         String sqlQuery = "select " +
                 "datetime("+DB_TABLE_LIST+"."+LIST_COLUMN_MDATE+", 'unixepoch', 'localtime')" + " AS "+LIST_COLUMN_DATE+", " +
                 DB_TABLE + "." + COLUMN_TXT + ", " +
                 DB_TABLE_LIST+"."+LIST_COLUMN_SUM + " " +
                 "from " + DB_TABLE_LIST + " AS " + DB_TABLE_LIST + " " +
-                "inner join " + DB_TABLE + " AS "+ DB_TABLE + " ON " + DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST +" = " + DB_TABLE+"."+COLUMN_ID;
+                "inner join " + DB_TABLE + " AS "+ DB_TABLE + " ON " + DB_TABLE_LIST+"."+LIST_COLUMN_IDCOST +" = " + DB_TABLE+"."+COLUMN_ID + " " +
+                "where "+LIST_COLUMN_MDATE + " >= ? and " + LIST_COLUMN_MDATE + " <= ? " ;
 
-        return mDB.rawQuery(sqlQuery, null);
+        return mDB.rawQuery(sqlQuery, new String[]{Long.toString(millisStart/1000), Long.toString(millisFinish/1000)});
     }
 
     // добавить запись в DB_TABLE

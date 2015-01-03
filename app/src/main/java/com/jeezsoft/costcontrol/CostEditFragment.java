@@ -13,9 +13,12 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.util.ArrayMap;
 import android.util.SparseLongArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -37,7 +40,7 @@ import static com.jeezsoft.costcontrol.R.id.etCostEditSumma;
  * Use the {@link CostEditFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CostEditFragment extends DialogFragment implements View.OnClickListener{
+public class CostEditFragment extends DialogFragment implements View.OnClickListener, TextView.OnEditorActionListener{
 
     private static final String ARG_ID = "id";
     private static final String ARG_DATE = "date";
@@ -67,6 +70,7 @@ public class CostEditFragment extends DialogFragment implements View.OnClickList
     private int mDayDate;
 
     private EditText etDate;
+    private EditText etSumma;
 
     private DB db;
 
@@ -91,31 +95,41 @@ public class CostEditFragment extends DialogFragment implements View.OnClickList
         super.onCreate(savedInstanceState);
     }
 
+    private void setDateComponents(){
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(mDate);
+
+            mDayDate = calendar.get(Calendar.DAY_OF_MONTH);
+            mMonthDate = calendar.get(Calendar.MONTH);
+            mYearDate = calendar.get(Calendar.YEAR);
+
+    }
+
+
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (getArguments() != null) {
             mId = getArguments().getLong(ARG_ID, 0);
             mDate = getArguments().getLong(ARG_DATE, 0L);
+            setDateComponents();
             mIdExpenditure = getArguments().getLong(ARG_ID_EXPENDITURE, 0);
             mSum = getArguments().getDouble(ARG_SUMMA, 0.00);
             mNameExpenditure = getArguments().getString(ARG_NAME_EXPENDITURE, "");
 
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(m;
-//
-//            Date = calendar.get(Calendar.DAY_OF_MONTH);
-//            Month = calendar.get(Calendar.MONTH);
-//            Year = calendar.get(Calendar.YEAR);
-
         }
 
         View rootView = getActivity().getLayoutInflater().inflate(R.layout.fragment_cost_edit, null);
-        EditText etSum = (EditText) rootView.findViewById(R.id.etCostEditSumma);
+        etSumma = (EditText) rootView.findViewById(R.id.etCostEditSumma);
+        etSumma.setText(Double.toString(mSum));
+        etSumma.setOnEditorActionListener(this);
+
         //EditText etExpenditure = (EditText) rootView.findViewById(R.id.etCostEditExpenditure);
         etDate = (EditText) rootView.findViewById(R.id.etCostEditDate);
-
-        etSum.setText(Double.toString(mSum));
         etDate.setText(getDateString(mDate));
+        etDate.setOnClickListener(this);
+
         //etExpenditure.setText(mNameExpenditure);
 
         db = ((MainActivity)getActivity()).getDb();
@@ -142,7 +156,7 @@ public class CostEditFragment extends DialogFragment implements View.OnClickList
                 // показываем позиция нажатого элемента
                 mIdExpenditure = id;
                 getArguments().putLong(ARG_ID_EXPENDITURE, mIdExpenditure);
-                Toast.makeText(getActivity(), "id = " + id, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "id = " + id, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -219,15 +233,49 @@ public class CostEditFragment extends DialogFragment implements View.OnClickList
     public void onClick(View v) {
 
         switch (v.getId()){
-            case R.id.tvCostEditDate:
-            case R.id.etSendingCostsStartDate:
-
+            case R.id.etCostEditDate:
+                setDateComponents();
                 DatepickerFragment newFragmentStartDate = DatepickerFragment.newInstance(mYearDate, mMonthDate, mDayDate);
                 newFragmentStartDate.setTargetFragment(CostEditFragment.this, REQUEST_EDITDATE);
                 newFragmentStartDate.show(getActivity().getFragmentManager(), "datePicker");
                 break;
         }
 
+    }
+
+
+    public void sumInput(){
+
+        mSum = getSum();
+        getArguments().putDouble(ARG_SUMMA, mSum);
+
+    }
+
+    public Double getSum()
+    {
+        Double sum = 0.00;
+        String textSum = etSumma.getText().toString();
+        try{
+            sum = Double.parseDouble(textSum);
+        }catch (NumberFormatException e){};
+
+        return sum;
+    }
+
+    @Override
+    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+        if (i == EditorInfo.IME_ACTION_DONE) {
+            // обрабатываем нажатие кнопки GO
+            sumInput();
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+            boolean b;
+            if (imm != null) {
+                b = imm.hideSoftInputFromWindow(etSumma.getWindowToken(), 0);
+            }
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -245,16 +293,15 @@ public class CostEditFragment extends DialogFragment implements View.OnClickList
 
     }
     public void setDate(int year, int month, int day){
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month, day);
-        String datetime = sdf.format(cal.getTime());
-        etDate.setText(datetime);
+        cal.set(year, month, day, 0, 0, 0);
+        mDate = cal.getTimeInMillis();
+
+        etDate.setText(getDateString(mDate));
     }
 
     public String getDateString(Long date){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(date);
         return sdf.format(cal.getTime());
