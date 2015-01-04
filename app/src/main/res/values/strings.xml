@@ -17,6 +17,7 @@
         <item>Список расходов</item>
         <item>Отправка расходов</item>
         <item>Статьи расходов</item>
+        <item>Настройки</item>
     </string-array>
 
     <string name="drawer_open">Open nd</string>
@@ -29,5 +30,7 @@
     <string name="date">Дата:</string>
     <string name="NameSumma">Сумма:</string>
     <string name="email">E-mail адрес:</string>
+    <string name="titleEmailPref">Адрес отправки</string>
+    <string name="summaryEmailPref">Используется по умолчанию при отправки расходов по почте.</string>
 
 </resources>

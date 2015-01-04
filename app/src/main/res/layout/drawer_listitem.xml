@@ -1,5 +1,15 @@
+<LinearLayout  android:layout_height="wrap_content"
+     android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical"
+    android:background="?android:attr/activatedBackgroundIndicator">
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/ivDrawerItemImage"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
 <TextView
-    android:id="@+id/section_label"
+    android:id="@+id/tvDrawerItemText"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -8,6 +18,6 @@
     android:paddingLeft="@dimen/padding"
     android:paddingRight="@dimen/padding"
     android:textColor="#FFF"
-    android:background="?android:attr/activatedBackgroundIndicator"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
     />
+</LinearLayout>

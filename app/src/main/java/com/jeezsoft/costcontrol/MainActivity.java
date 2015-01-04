@@ -6,12 +6,17 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +32,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 
 
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -35,7 +43,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 
@@ -56,6 +67,10 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
     CostItemListFragment costItemList;
     Double sum = 0.00;
     DB db;
+
+    // имена атрибутов для Map
+    final String ATTRIBUTE_NAME_TEXT = "text";
+    final String ATTRIBUTE_NAME_IMG = "img";
 
     public DB getDb() {
         return db;
@@ -82,7 +97,10 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
             @Override
             public void onDrawerOpened(View drawerView) {
                 showKeyboard(false);
-                getActionBar().setTitle("Выбор");
+                ActionBar actionBar = getActionBar();
+                if (actionBar != null) {
+                    actionBar.setTitle("Выбор");
+                }
                 invalidateOptionsMenu();
             }
 
@@ -91,7 +109,10 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
                 if (mDrawerItem == 0){
                     showKeyboard(true);
                 }
-                getActionBar().setTitle(mTitle);
+                ActionBar actionBar = getActionBar();
+                if (actionBar != null) {
+                    actionBar.setTitle(mTitle);
+                }
                 invalidateOptionsMenu();
             }
         };
@@ -99,11 +120,32 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(getBaseContext(),
-                  R.layout.drawer_listitem, mMainMenu));
+        ArrayList<Map<String, Object>> alMainMenu = new ArrayList<Map<String, Object>>(mMainMenu.length);
+        Map<String, Object> m;
+        for (int i = 0; i < mMainMenu.length; i++) {
+            m = new HashMap<String, Object>();
+            if (mMainMenu[i].equals("Настройки")) {
+                m.put(ATTRIBUTE_NAME_TEXT, new LayoutDrawerList(mMainMenu[i], Gravity.RIGHT+Gravity.CENTER_VERTICAL, android.R.drawable.ic_menu_preferences));
+            }else{
+                m.put(ATTRIBUTE_NAME_TEXT, new LayoutDrawerList(mMainMenu[i], Gravity.LEFT+Gravity.CENTER_VERTICAL, 0));
+            }
+            alMainMenu.add(m);
+        }
+
+
+        String[] from = {ATTRIBUTE_NAME_TEXT, ATTRIBUTE_NAME_TEXT};
+        // массив ID View-компонентов, в которые будут вставлять данные
+        int[] to = { R.id.tvDrawerItemText, R.id.ivDrawerItemImage};
+
+        SimpleAdapter sAdapter = new SimpleAdapter(getBaseContext(), alMainMenu, R.layout.drawer_listitem, from, to);
+        sAdapter.setViewBinder(new MyViewBinder());
+        mDrawerList.setAdapter(sAdapter);
           // Set the list's click listener
-        getActionBar().setHomeButtonEnabled(true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
 
          mDrawerList.setOnItemClickListener(this);
@@ -118,6 +160,18 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
 
     }
 
+    private class LayoutDrawerList{
+        int img;
+        String txt;
+        int grav;
+
+        private LayoutDrawerList(String txt, int grav, int img) {
+            this.img = img;
+            this.txt = txt;
+            this.grav = grav;
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -130,7 +184,6 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         super.onDestroy();
         db.close();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -215,17 +268,11 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
         Toast.makeText(this, "Добавлен расход:  "+sum+" руб.", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Called when a view has been clicked.
-     *
-     * @param v The view that was clicked.
-     */
     @Override
     public void onClick(View v) {
 
 
     }
-
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -265,7 +312,7 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
                 mDrawerLayout.closeDrawer(mDrawerList);
                 break;
             case 2: fTrans = getFragmentManager().beginTransaction();
-                fTrans.replace(R.id.container, new SendingCostsFragment(), "sendingCosts");
+                fTrans.replace(R.id.container, SendingCostsFragment.newInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("emailAddress", "")), "sendingCosts");
                 fTrans.commit();
                 mDrawerLayout.closeDrawer(mDrawerList);
                 break;
@@ -274,12 +321,14 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
                 fTrans.commit();
                 mDrawerLayout.closeDrawer(mDrawerList);
                 break;
+            case 4: fTrans = getFragmentManager().beginTransaction();
+                fTrans.replace(R.id.container, PreferenceFragmentImpl.newInstance());
+                fTrans.commit();
+                mDrawerLayout.closeDrawer(mDrawerList);
+                break;
 
         }
     }
-
-
-
 
     @Override
     public void onExpenditureSelected(int id, String name) {
@@ -378,6 +427,37 @@ public class MainActivity extends Activity implements onSomeEventListener, ListV
             sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Отчет по расходам");
 
             startActivity(Intent.createChooser(sharingIntent, "Send email"));
+        }
+    }
+
+    class MyViewBinder implements SimpleAdapter.ViewBinder {
+
+        @Override
+        public boolean setViewValue(View view, Object data,
+                                    String textRepresentation) {
+            LayoutDrawerList ldl = (LayoutDrawerList) data;
+            switch (view.getId()) {
+                // LinearLayout
+                case R.id.tvDrawerItemText:
+                    TextView tv = (TextView) view;
+                    tv.setText(ldl.txt);
+                   // tv.setGravity(ldl.grav);
+
+                    return true;
+                case R.id.ivDrawerItemImage:
+                    ImageView iv = (ImageView) view;
+                    if (ldl.img != 0) {
+                        try {
+                            iv.setImageResource(ldl.img);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    return true;
+
+            }
+            return false;
         }
     }
 }
